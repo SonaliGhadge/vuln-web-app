@@ -318,10 +318,20 @@ def page():
         description: The output of the command.
     """
 
+    allowed_commands = {
+        "list_root": ["ls", "/"],
+        "print_pwd": ["pwd"],
+    }
 
-    cmd = request.args.get("cmd")
+    cmd = request.args.get("cmd", "")
+    command_to_run = allowed_commands.get(cmd)
+    if not command_to_run:
+        return "Invalid command", 400
 
-    return subprocess.check_output(cmd, shell=True)
+    try:
+        return subprocess.check_output(command_to_run)
+    except subprocess.CalledProcessError:
+        return "Command execution failed", 400
     # command_to_be_executed = ['cat', '/']
     # return subprocess.check_output(command_to_be_executed, shell=True)
 
